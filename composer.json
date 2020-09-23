@@ -1,6 +1,6 @@
 {
   "name": "krehak/sk-firmy",
-  "description": "Jednoduchy wrapper na ziskanie udajov Slovenskych firiem podla ICO z ORSR a Registra UZ",
+  "description": "Jednoduchý wrapper na získanie údajov Slovenských firiem a SZČO podľa IČO/DIČ z ORSR a Registra účtovných závierok + overenie registrácie na DPH (IČ DPH) z EU VIES.",
   "keywords": [
     "krehak", "sk-firmy", "sk firmy", "sk ico", "sk dic", "sk ic dph", "fakturacne udaje"
   ],
