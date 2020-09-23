@@ -19,8 +19,6 @@
       "Krehak\\SkFirmy\\": "src"
     }
   },
-  "minimum-stability": "dev",
-  "prefer-stable": true,
   "require": {
     "php": "^7.2.5",
     "ext-curl": "*",
