@@ -1,8 +1,8 @@
 # sk-firmy
 
-Jednoduchý wrapper na získanie údajov Slovenských firiem podľa IČO z ORSR a Registra účtovných závierok + overenie registrácie na DPH (IČ DPH) z EU VIES.
+Jednoduchý wrapper na získanie údajov Slovenských firiem a SZČO podľa IČO/DIČ z ORSR a Registra účtovných závierok + overenie registrácie na DPH (IČ DPH) z EU VIES.
 
-Zdrojoý kód inšpirovaný z repozitára [samuelszabo/SK-doplnenie-udajov-firmy](https://github.com/samuelszabo/SK-doplnenie-udajov-firmy).
+Zdrojový kód inšpirovaný z repozitára [samuelszabo/SK-doplnenie-udajov-firmy](https://github.com/samuelszabo/SK-doplnenie-udajov-firmy).
 
 ### Inštalácia
 
@@ -69,5 +69,7 @@ use Krehak\SkFirmy\SkFirmy;
 $skFirmy = new SkFirmy();
 $results = $skFirmy->find('ico', '31322832')->getResults();
 
+echo '<pre>';
 print_r($results);
+echo '</pre>';
 ```

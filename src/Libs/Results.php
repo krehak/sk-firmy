@@ -16,7 +16,7 @@ class Results {
     }
 
     public function getAll(): array {
-        return $this->data;
+        return array_values($this->data);
     }
 
     private function idExists(string $id): bool {
