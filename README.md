@@ -73,3 +73,4 @@ echo '<pre>';
 print_r($results);
 echo '</pre>';
 ```
+![Ukážka v prehliadači](/examples/example.png)
