@@ -73,4 +73,4 @@ echo '<pre>';
 print_r($results);
 echo '</pre>';
 ```
-![Ukážka v prehliadači](/examples/example.png)
+![Ukážka v prehliadači](https://raw.githubusercontent.com/krehak/sk-firmy/master/examples/example.png)
