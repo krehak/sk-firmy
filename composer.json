@@ -6,7 +6,7 @@
   ],
   "version": "1.0.0",
   "homepage": "https://github.com/krehak/sk-firmy",
-  "license": "GNU GPL v3",
+  "license": "GPL-3.0-or-later",
   "authors": [
     {
       "name": "Patrik Krehák",
