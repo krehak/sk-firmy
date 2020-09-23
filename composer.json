@@ -1,0 +1,30 @@
+{
+  "name": "krehak/sk-firmy",
+  "description": "Jednoduchy wrapper na ziskanie udajov Slovenskych firiem podla ICO z ORSR a Registra UZ",
+  "keywords": [
+    "krehak", "sk-firmy", "sk firmy", "sk ico", "sk dic", "sk ic dph", "fakturacne udaje"
+  ],
+  "version": "1.0.0",
+  "homepage": "https://github.com/krehak/sk-firmy",
+  "license": "GNU GPL v3",
+  "authors": [
+    {
+      "name": "Patrik Krehák",
+      "email": "contact@ptk.sk",
+      "homepage": "https://krehak.com/"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Krehak\\SkFirmy\\": "src"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": "^7.2.5",
+    "ext-curl": "*",
+    "ext-json": "*",
+    "ext-soap": "*"
+  }
+}
