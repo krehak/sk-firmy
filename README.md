@@ -4,7 +4,7 @@ Jednoduchý wrapper na získanie údajov Slovenských firiem a SZČO podľa IČO
 
 Zdrojový kód inšpirovaný z repozitára [samuelszabo/SK-doplnenie-udajov-firmy](https://github.com/samuelszabo/SK-doplnenie-udajov-firmy).
 
-### Inštalácia
+## Inštalácia
 
 ``
 $ composer require krehak/sk-firmy
@@ -17,7 +17,7 @@ V prípade, že v projekte nepoužívate composer. V opačnom prípade sa packag
 require_once './vendor/autoload.php';
 ```
 
-### Použitie
+## Použitie
 V hlavičke PHP súboru:
 
 ```php
@@ -58,7 +58,7 @@ Premenná `$results` bude obsahovať pole hodnôt.
 | `tax_id` | DIČ |
 | `vat_id` | IČ DPH |
 
-### Príklad
+## Príklad
 ```php
 // index.php
 
@@ -74,3 +74,13 @@ print_r($results);
 echo '</pre>';
 ```
 ![Ukážka v prehliadači](https://raw.githubusercontent.com/krehak/sk-firmy/master/examples/example.png)
+
+### Milestones
+
+- [x] Vyhľadávanie podľa IČO/DIČ
+- [x] Overovanie IČ DPH
+- [ ] Vyhľadávanie podľa obchodného mena
+- [ ] Vyhľadávanie podľa sídla
+- [ ] Vyhľadávanie podľa mena a priezviska
+- [ ] Vyhľadávanie pomocou full-textu
+- [ ] Zoznam konateľov do výpisu (v prípade s.r.o.)
