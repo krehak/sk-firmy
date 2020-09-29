@@ -22,6 +22,8 @@ V hlavičke PHP súboru:
 
 ```php
 use Krehak\SkFirmy\SkFirmy;
+use Krehak\SkFirmy\Fields\BusinessId; // Ak budete vyhľadávať podľa IČO
+use Krehak\SkFirmy\Fields\TaxId; // Ak budete vyhľadávať podľa DIČ
 ```
 
 Vo vašej časti kódu:
@@ -30,23 +32,21 @@ Vo vašej časti kódu:
 ...
 
 $skFirmy = new SkFirmy();
-$results = $skFirmy->find('[FIELD]', '[ID]')->getResults();
+$results = $skFirmy->find(FieldType('xxx'))->getResults();
 
 print_r($results);
 
 ...
 ```
 
-Premenná `$results` bude obsahovať pole hodnôt.
+#### Možnosti FieldType
 
-#### Možnosti
-
-| Názov | Popis |
+| Objekt | Popis |
 | --- | --- |
-| `[FIELD]` | Políčko na vyhľadávanie (momentálne dostupné len 'ico' alebo 'dic') |
-| `[ID]` | IČO alebo DIČ (podľa nastavenia [FIELD]) |
+| `new BusinessId('xxx')` | Vyhľadať podľa IČO |
+| `new TaxId('xxx')` | Vyhľadať podľa DIČ |
 
-#### Návratové hodnoty (pre každý záznam)
+##### Premenná `$results` bude obsahovať pole hodnôt:
 
 | Názov | Popis |
 | --- | --- |
@@ -56,18 +56,20 @@ Premenná `$results` bude obsahovať pole hodnôt.
 | `zip` | PSČ |
 | `business_id` | IČO |
 | `tax_id` | DIČ |
-| `vat_id` | IČ DPH |
+| `vat_id` | IČ DPH (len ak je overená registrácia na DPH) |
 
 ## Príklad
+
 ```php
 // index.php
 
 require_once './vendor/autoload.php';
 
 use Krehak\SkFirmy\SkFirmy;
+use Krehak\SkFirmy\Fields\BusinessId;
 
 $skFirmy = new SkFirmy();
-$results = $skFirmy->find('ico', '31322832')->getResults();
+$results = $skFirmy->find(new BusinessId('31322832'))->getResults();
 
 echo '<pre>';
 print_r($results);

@@ -2,41 +2,55 @@
 
 namespace Krehak\SkFirmy\Libs;
 
+use Krehak\SkFirmy\Fields\BusinessId;
+use Krehak\SkFirmy\Fields\FieldType;
+use Krehak\SkFirmy\Fields\TaxId;
+
 class FindInRegisterUz {
-    private $fieldToFind = 'ico';
-    private $urlDomainMain = 'http://www.registeruz.sk/cruz-public/api/uctovne-jednotky?zmenene-od=2000-01-01&pokracovat-za-id=1&max-zaznamov=1&{field}={search}';
-    private $urlDomainDetail = 'http://www.registeruz.sk/cruz-public/api/uctovna-jednotka?id={id}';
+    private const URL_MAIN = 'http://www.registeruz.sk/cruz-public/api/uctovne-jednotky?zmenene-od=2000-01-01&pokracovat-za-id=1&max-zaznamov=100&{field}={search}';
+    private const URL_DETAIL = 'http://www.registeruz.sk/cruz-public/api/uctovna-jednotka?id={id}';
+    private const FIELD_STATE = 'stav';
+    private const INVALID_STATES = ['ZMAZANÉ'];
+    
     private $validator;
 
     public function __construct() {
         $this->validator = new TaxIdValidator();
     }
 
-    public function find(string $search): array {
-        $items = $this->getAllResults($search);
-        $results = [];
-
-        foreach($items as $id) {
-            $detail = $this->getResultDetail($id);
-
-            if(!is_null($detail)) {
-                $results[$detail['business_id']] = $detail;
+    public function find(FieldType $field): array {
+        if(
+            $field instanceof BusinessId ||
+            $field instanceof TaxId
+        ) {
+            $items = $this->getAllResults($field);
+            $results = [];
+    
+            foreach($items as $id) {
+                $detail = $this->getResultDetail($id);
+        
+                if(!is_null($detail)) {
+                    $results[$detail['business_id']] = $detail;
+                }
             }
+    
+            return $results;
         }
 
-        return $results;
+        return [];
     }
 
-    private function getAllResults(string $search): ?array {
+    private function getAllResults(FieldType $field): ?array {
         $data = [
-            'field' => $this->fieldToFind,
-            'search' => $search
+            'field' => $field->getName(),
+            'search' => $field->getValue()
         ];
 
         $request = new Request();
-        $url = $request->buildUrl($this->urlDomainMain, $data);
-        $request->setConnection($url);
-        $response = $request->getResponse();
+        $url = Request::buildUrl(self::URL_MAIN, $data);
+        $response = $request
+            ->setConnection($url)
+            ->getResponse();
 
         $json = json_decode($response);
 
@@ -47,13 +61,13 @@ class FindInRegisterUz {
         return null;
     }
 
-    private function getResultDetail(string $id): array {
+    private function getResultDetail(string $id): ?array {
         $data = [
             'id' => $id
         ];
 
         $request = new Request();
-        $url = $request->buildUrl($this->urlDomainDetail, $data);
+        $url = $request->buildUrl(self::URL_DETAIL, $data);
         $request->setConnection($url);
         $response = $request->getResponse();
 
@@ -63,10 +77,18 @@ class FindInRegisterUz {
             return $this->parseDetail($json);
         }
 
-        return [];
+        return null;
     }
 
-    private function parseDetail(object $detailObject): array {
+    private function parseDetail(object $detailObject): ?array {
+        if(property_exists($detailObject, self::FIELD_STATE)) {
+            $state = $detailObject->{self::FIELD_STATE};
+            
+            if(in_array($state, self::INVALID_STATES)) {
+                return null;
+            }
+        }
+        
         $return = [];
         $return['name'] = $detailObject->nazovUJ;
         $return['street'] = $detailObject->ulica;
@@ -75,9 +97,9 @@ class FindInRegisterUz {
         $return['business_id'] = $detailObject->ico;
 
         $taxId = (string)$detailObject->dic;
+        $return['tax_id'] = $taxId;
 
         if($this->isTaxIdValid($taxId)) {
-            $return['tax_id'] = $taxId;
             $return['vat_id'] = $this->getVatId($taxId);
         }
 

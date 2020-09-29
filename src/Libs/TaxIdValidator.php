@@ -5,19 +5,19 @@ namespace Krehak\SkFirmy\Libs;
 use SoapClient;
 
 class TaxIdValidator {
-    private $countryCode = 'SK';
-    private $urlTaxationEU = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
+    private const COUNTRY_CODE = 'SK';
+    private const TAXATION_URL = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
 
     public function validate(string $taxId): bool {
         try {
-            $client = new SoapClient($this->urlTaxationEU);
+            $client = new SoapClient(self::TAXATION_URL);
 
-            $obj3 = $client->checkVat(array(
-                'countryCode' => $this->countryCode,
+            $result = $client->checkVat(array(
+                'countryCode' => self::COUNTRY_CODE,
                 'vatNumber' => $taxId
             ));
 
-            if($obj3->valid) {
+            if($result->valid) {
                 return true;
             }
         } catch (\SoapFault $e) {
@@ -27,6 +27,6 @@ class TaxIdValidator {
     }
 
     public function getVatId(string $taxId): string {
-        return "{$this->countryCode}{$taxId}";
+        return self::COUNTRY_CODE . $taxId;
     }
 }

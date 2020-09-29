@@ -4,7 +4,7 @@
   "keywords": [
     "krehak", "sk-firmy", "sk firmy", "sk ico", "sk dic", "sk ic dph", "fakturacne udaje"
   ],
-  "version": "1.0.0",
+  "version": "1.1.0",
   "homepage": "https://github.com/krehak/sk-firmy",
   "license": "GPL-3.0-or-later",
   "authors": [
@@ -23,6 +23,7 @@
     "php": "^7.2.5",
     "ext-curl": "*",
     "ext-json": "*",
-    "ext-soap": "*"
+    "ext-soap": "*",
+    "ext-iconv": "*"
   }
 }

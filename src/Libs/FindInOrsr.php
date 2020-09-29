@@ -2,39 +2,52 @@
 
 namespace Krehak\SkFirmy\Libs;
 
+use Krehak\SkFirmy\Fields\BusinessId;
+use Krehak\SkFirmy\Fields\FieldType;
+
 class FindInOrsr {
-    private $fieldToFind = 'ICO';
-    private $urlDomainMain = 'http://www.orsr.sk/hladaj_ico.asp?{field}={search}&SID=0';
-    private $urlDomainDetail = 'http://www.orsr.sk/vypis.asp?ID={id}&SID=2&P=0';
-    private $htmlFieldId = 'IČO';
-    private $htmlFieldName = 'Oddiel';
-    private $htmlFieldAddress = 'Sídlo';
+    private const URL_FIND_BUSINESS_ID = 'http://www.orsr.sk/hladaj_ico.asp?ICO={search}&SID=0';
+    private const URL_FIND_NAME = 'http://www.orsr.sk/hladaj_subjekt.asp?OBMENO={search}&PF=0&SID=0&S=on';
+    private const URL_DETAIL = 'http://www.orsr.sk/vypis.asp?ID={id}&SID=2&P=0';
+    private const HTML_FIELD_ID = 'IČO';
+    private const HTML_FIELD_NAME = 'Oddiel';
+    private const HTML_FIELD_ADDRESS = 'Sídlo';
 
-    public function find(string $search): array {
-        $items = $this->getAllResults($search);
-        $results = [];
-
-        foreach($items as $id) {
-            $detail = $this->getResultDetail($id);
-
-            if(!is_null($detail)) {
-                $results[$detail['business_id']] = $detail;
+    public function find(FieldType $field): array {
+        if(
+            $field instanceof BusinessId
+        ) {
+            $items = $this->getAllResults($field);
+            $results = [];
+    
+            foreach($items as $id) {
+                $detail = $this->getResultDetail($id);
+        
+                if(!is_null($detail)) {
+                    $results[$detail['business_id']] = $detail;
+                }
             }
+    
+            return $results;
         }
 
-        return $results;
+        return [];
     }
 
-    private function getAllResults(string $search): array {
+    private function getAllResults(FieldType $field): array {
+        if($field instanceof BusinessId) $baseUrl = self::URL_FIND_BUSINESS_ID;
+        else $baseUrl = null;
+        
         $data = [
-            'field' => $this->fieldToFind,
-            'search' => $search
+            'search' => $field->getValue()
         ];
 
         $request = new Request();
-        $url = $request->buildUrl($this->urlDomainMain, $data);
-        $request->setConnection($url, true);
-        $response = $request->getResponse();
+        $url = Request::buildUrl($baseUrl, $data);
+        $response = $request
+            ->setEncoding('CP1250')
+            ->setConnection($url)
+            ->getResponse();
 
         preg_match_all('/vypis\.asp\?ID=([0-9a-z]+)/mi', $response,$found);
 
@@ -51,7 +64,7 @@ class FindInOrsr {
         ];
 
         $request = new Request();
-        $url = $request->buildUrl($this->urlDomainDetail, $data);
+        $url = $request->buildUrl(self::URL_DETAIL, $data);
         $request->setConnection($url, true);
         $response = $request->getResponse();
 
@@ -84,28 +97,28 @@ class FindInOrsr {
             $founds[$field] = $values;
         }
 
-        if(!array_key_exists($this->htmlFieldId, $founds)) return null;
+        if(!array_key_exists(self::HTML_FIELD_ID, $founds)) return null;
 
-        $foundico = preg_replace("/[^0-9]/", "", $founds[$this->htmlFieldId][0]);
+        $foundico = preg_replace("/[^0-9]/", "", $founds[self::HTML_FIELD_ID][0]);
 
         $return = [];
-        $return['name'] = $founds[$this->htmlFieldName][0];
-        unset($founds[$this->htmlFieldAddress][count($founds[$this->htmlFieldAddress]) - 1]);
+        $return['name'] = $founds[self::HTML_FIELD_NAME][0];
+        unset($founds[self::HTML_FIELD_ADDRESS][count($founds[self::HTML_FIELD_ADDRESS]) - 1]);
 
-        if(count($founds[$this->htmlFieldAddress]) == 1) {
+        if(count($founds[self::HTML_FIELD_ADDRESS]) == 1) {
             $return['street'] = '';
-            $return['city'] = $founds[$this->htmlFieldAddress][0];
+            $return['city'] = $founds[self::HTML_FIELD_ADDRESS][0];
             $return['zip'] = '';
-        } elseif(count($founds[$this->htmlFieldAddress]) == 2) {
+        } elseif(count($founds[self::HTML_FIELD_ADDRESS]) == 2) {
             $return['street'] = '';
-            $return['city'] = $founds[$this->htmlFieldAddress][0];
-            $return['zip'] = $founds[$this->htmlFieldAddress][1];
+            $return['city'] = $founds[self::HTML_FIELD_ADDRESS][0];
+            $return['zip'] = $founds[self::HTML_FIELD_ADDRESS][1];
         } else {
-            $return['zip'] = $founds[$this->htmlFieldAddress][count($founds[$this->htmlFieldAddress]) - 1];
-            unset($founds[$this->htmlFieldAddress][count($founds[$this->htmlFieldAddress]) - 1]);
-            $return['city'] = $founds[$this->htmlFieldAddress][count($founds[$this->htmlFieldAddress]) - 1];
-            unset($founds[$this->htmlFieldAddress][count($founds[$this->htmlFieldAddress]) - 1]);
-            $return['street'] = implode(' ', $founds[$this->htmlFieldAddress]);
+            $return['zip'] = $founds[self::HTML_FIELD_ADDRESS][count($founds[self::HTML_FIELD_ADDRESS]) - 1];
+            unset($founds[self::HTML_FIELD_ADDRESS][count($founds[self::HTML_FIELD_ADDRESS]) - 1]);
+            $return['city'] = $founds[self::HTML_FIELD_ADDRESS][count($founds[self::HTML_FIELD_ADDRESS]) - 1];
+            unset($founds[self::HTML_FIELD_ADDRESS][count($founds[self::HTML_FIELD_ADDRESS]) - 1]);
+            $return['street'] = implode(' ', $founds[self::HTML_FIELD_ADDRESS]);
         }
 
         $return['business_id'] = $foundico;
